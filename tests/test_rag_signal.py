@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from vllm_kv_shrinker.rag.rag_signal import RAGSignal, RAGKeywordScore, _find_subseq
+from vllm_kv_shrinker.rag.rag_signal import RAGKeywordScore, RAGSignal, _find_subseq
 
 
 class TestRAGKeywordScore:
@@ -46,9 +46,7 @@ class TestRAGSignalFromKeywords:
                 # Simple char-level fake encoding
                 return [ord(c) for c in text.lower() if c.isalpha()]
 
-        # input_ids contains [ord('p'), ord('a'), ...] for "paris"
-        keyword = "ab"
-        kw_ids = [ord('a'), ord('b')]
+        # input_ids contains ord values for "ab" at two positions
         # Sequence: ..., 97, 98, ..., 97, 98, ...
         ids = torch.tensor([0, ord('a'), ord('b'), 5, ord('a'), ord('b'), 9])
 

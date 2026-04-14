@@ -29,12 +29,12 @@ from typing import Optional, Tuple
 
 import torch
 
-from vllm_kv_shrinker.core.config import KVShrinkerConfig, EvictionPolicy
+from vllm_kv_shrinker.core.config import EvictionPolicy, KVShrinkerConfig
+from vllm_kv_shrinker.core.eviction_policy import apply_eviction, apply_eviction_to_kv
 from vllm_kv_shrinker.core.importance_scorer import (
     ImportanceScorer,
     build_scorer,
 )
-from vllm_kv_shrinker.core.eviction_policy import apply_eviction, apply_eviction_to_kv
 from vllm_kv_shrinker.rag.rag_signal import RAGSignal
 
 

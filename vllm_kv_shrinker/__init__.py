@@ -12,15 +12,15 @@ Quickstart:
     shrinker = KVShrinker(config)
 """
 
-from vllm_kv_shrinker.core.kv_shrinker import KVShrinker
-from vllm_kv_shrinker.core.config import KVShrinkerConfig, EvictionPolicy
-from vllm_kv_shrinker.rag.rag_signal import RAGSignal, RAGKeywordScore
+from vllm_kv_shrinker.core.config import EvictionPolicy, KVShrinkerConfig
 from vllm_kv_shrinker.core.importance_scorer import (
-    ImportanceScorer,
     H2OScorer,
-    SnapKVScorer,
+    ImportanceScorer,
     RAGAwareScorer,
+    SnapKVScorer,
 )
+from vllm_kv_shrinker.core.kv_shrinker import KVShrinker
+from vllm_kv_shrinker.rag.rag_signal import RAGKeywordScore, RAGSignal
 
 __all__ = [
     "KVShrinker",

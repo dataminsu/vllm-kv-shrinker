@@ -5,7 +5,8 @@ Demonstrates the core API on synthetic tensors.
 """
 
 import torch
-from vllm_kv_shrinker import KVShrinker, KVShrinkerConfig, EvictionPolicy
+
+from vllm_kv_shrinker import EvictionPolicy, KVShrinker, KVShrinkerConfig
 
 # ── 1. Create a shrinker with 30% budget ──────────────────────────────────
 config = KVShrinkerConfig(

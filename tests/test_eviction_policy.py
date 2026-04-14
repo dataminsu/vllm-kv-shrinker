@@ -4,9 +4,9 @@ import pytest
 import torch
 
 from vllm_kv_shrinker.core.eviction_policy import (
-    select_tokens_to_keep,
     apply_eviction,
     apply_eviction_to_kv,
+    select_tokens_to_keep,
 )
 
 

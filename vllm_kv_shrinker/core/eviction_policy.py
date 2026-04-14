@@ -7,8 +7,6 @@ Sink tokens and recent-window tokens are always kept regardless of scores.
 
 from __future__ import annotations
 
-from typing import Optional
-
 import torch
 
 

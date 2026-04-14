@@ -3,8 +3,8 @@
 import pytest
 import torch
 
+from vllm_kv_shrinker.core.config import EvictionPolicy, KVShrinkerConfig
 from vllm_kv_shrinker.core.kv_shrinker import KVShrinker
-from vllm_kv_shrinker.core.config import KVShrinkerConfig, EvictionPolicy
 from vllm_kv_shrinker.rag.rag_signal import RAGSignal
 
 

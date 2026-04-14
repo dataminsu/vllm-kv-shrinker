@@ -4,16 +4,17 @@ KV Cache Pruning Research Report Generator
 - Generates comprehensive Word report
 """
 
-import os
-import urllib.request
-import urllib.error
-import time
-from docx import Document
-from docx.shared import Inches, Pt, RGBColor, Cm
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
 import datetime
+import os
+import time
+import urllib.error
+import urllib.request
+
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Pt, RGBColor
 
 PAPERS_DIR = os.path.join(os.path.dirname(__file__), "papers")
 os.makedirs(PAPERS_DIR, exist_ok=True)

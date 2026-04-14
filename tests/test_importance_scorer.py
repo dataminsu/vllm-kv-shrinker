@@ -3,13 +3,13 @@
 import pytest
 import torch
 
+from vllm_kv_shrinker.core.config import EvictionPolicy, KVShrinkerConfig
 from vllm_kv_shrinker.core.importance_scorer import (
     H2OScorer,
-    SnapKVScorer,
     RAGAwareScorer,
+    SnapKVScorer,
     build_scorer,
 )
-from vllm_kv_shrinker.core.config import KVShrinkerConfig, EvictionPolicy
 
 
 @pytest.fixture

@@ -9,10 +9,11 @@ here we demonstrate the signal flow on synthetic data.
 """
 
 import torch
+
 from vllm_kv_shrinker import (
+    EvictionPolicy,
     KVShrinker,
     KVShrinkerConfig,
-    EvictionPolicy,
     RAGSignal,
 )
 
@@ -91,7 +92,8 @@ print(f"'PagedAttention' tokens (40-41) kept: {mask[40].item()} / {mask[41].item
 print(f"'KV cache' tokens (80-81) kept      : {mask[80].item()} / {mask[81].item()}")
 
 # ── Compare: same budget without RAG ──────────────────────────────────────
-from vllm_kv_shrinker.core.config import EvictionPolicy as EP
+from vllm_kv_shrinker.core.config import EvictionPolicy as EP  # noqa: E402
+
 config_norag = KVShrinkerConfig(budget_ratio=0.25, policy=EP.SNAPKV)
 shrinker_norag = KVShrinker(config_norag, layer_idx=16, total_layers=32)
 _, _, mask_norag = shrinker_norag.compress(key, value, attn)
