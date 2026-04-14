@@ -35,6 +35,7 @@ from vllm_kv_shrinker.core.importance_scorer import (
     ImportanceScorer,
     build_scorer,
 )
+from vllm_kv_shrinker.core.kv_quantizer import KVQuantizer, QuantizedKV
 from vllm_kv_shrinker.rag.rag_signal import RAGSignal
 
 
@@ -78,6 +79,13 @@ class KVShrinker:
 
         # For H2O: maintain running accumulated scores across decode steps
         self._accumulated_scores: Optional[torch.Tensor] = None
+
+        # Optional post-eviction quantizer
+        self.quantizer: Optional[KVQuantizer] = (
+            KVQuantizer(bits=config.quant_bits, group_size=config.quant_group_size)
+            if config.quant_bits is not None
+            else None
+        )
 
     # ------------------------------------------------------------------
     # Public API
@@ -146,7 +154,44 @@ class KVShrinker:
         # --- Filter KV tensors ---
         pruned_key, pruned_value, _ = apply_eviction_to_kv(key, value, keep_mask)
 
+        # Optional post-eviction quantization (quant → dequant to preserve dtype)
+        if self.quantizer is not None:
+            pruned_key = self.quantizer.quantize_and_dequantize(pruned_key)
+            pruned_value = self.quantizer.quantize_and_dequantize(pruned_value)
+
         return pruned_key, pruned_value, keep_mask
+
+    def compress_quantized(
+        self,
+        key: torch.Tensor,
+        value: torch.Tensor,
+        attn_weights: torch.Tensor,
+        rag_signal: Optional[RAGSignal] = None,
+    ) -> Tuple["QuantizedKV", "QuantizedKV", torch.Tensor]:
+        """
+        Like compress(), but returns QuantizedKV objects instead of float tensors.
+
+        Requires quant_bits to be set in config.  Caller is responsible for
+        calling .dequantize() before passing to attention kernels.
+
+        Returns:
+            q_key:    QuantizedKV for keys
+            q_value:  QuantizedKV for values
+            keep_mask: [seq_len] bool
+        """
+        if self.quantizer is None:
+            raise RuntimeError(
+                "compress_quantized() requires quant_bits to be set in KVShrinkerConfig"
+            )
+        pruned_key, pruned_value, keep_mask = self.compress(
+            key, value, attn_weights, rag_signal
+        )
+        # compress() already applied quant-dequant; redo quantize-only for the
+        # quantized output path — temporarily bypass the quant-dequant in compress()
+        # by quantizing the pruned float tensors directly.
+        q_key = self.quantizer.quantize(pruned_key)
+        q_value = self.quantizer.quantize(pruned_value)
+        return q_key, q_value, keep_mask
 
     def reset_state(self) -> None:
         """Reset per-sequence accumulated state (call between requests)."""

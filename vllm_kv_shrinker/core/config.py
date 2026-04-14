@@ -48,6 +48,9 @@ class KVShrinkerConfig:
     layer_budget_schedule: Optional[dict] = None
     min_budget_tokens: int = 16
     device: str = "cuda"
+    # Post-eviction KV quantization (None = disabled, 8 = INT8, 4 = INT4)
+    quant_bits: Optional[int] = None
+    quant_group_size: int = 128
 
     def __post_init__(self):
         if isinstance(self.policy, str):
@@ -55,6 +58,8 @@ class KVShrinkerConfig:
         assert 0 < self.budget_ratio <= 1.0, "budget_ratio must be in (0, 1]"
         assert self.sink_size >= 0
         assert self.window_size >= 0
+        if self.quant_bits is not None:
+            assert self.quant_bits in (4, 8), "quant_bits must be 4 or 8"
 
     def get_layer_budget(self, layer_idx: int, total_layers: int) -> float:
         """Return budget ratio for a given layer (supports pyramid schedule)."""
